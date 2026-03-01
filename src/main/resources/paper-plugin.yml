@@ -1,0 +1,18 @@
+name: CaptureTheFlag
+version: '${version}'
+main: dev.danielmillar.ctf.CaptureTheFlag
+api-version: '1.21'
+load: STARTUP
+authors: [ Daniel Millar ]
+website: https://danielmillar.dev
+
+permissions:
+  ctf.play.join:
+    description: Use CTF player commands
+    default: true
+  ctf.admin.setup:
+    description: Configure CTF locations
+    default: op
+  ctf.admin.control:
+    description: Start and stop CTF matches
+    default: op
