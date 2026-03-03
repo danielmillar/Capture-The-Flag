@@ -8,6 +8,7 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -46,10 +47,24 @@ public class BossBarService {
       bossBarTask.cancel();
       bossBarTask = null;
     }
-    if (bossBar != null) {
-      Bukkit.getOnlinePlayers().forEach(player -> player.hideBossBar(bossBar));
-      bossBar = null;
-    }
+  }
+
+  /**
+   * Shows the boss bar to the player.
+   *
+   * @param player The player to show the boss bar to
+   */
+  public void showTo(Player player) {
+    if (bossBar != null) player.showBossBar(bossBar);
+  }
+
+  /**
+   * Hides the boss bar from the player.
+   *
+   * @param player The player to hide the boss bar from.
+   */
+  public void hideTo(Player player) {
+    if (bossBar != null) player.hideBossBar(bossBar);
   }
 
   private void update() {
@@ -59,7 +74,6 @@ public class BossBarService {
       bossBar.name(MINI_MESSAGE.deserialize("<gray>You're currently in the lobby"));
       bossBar.color(BossBar.Color.WHITE);
       bossBar.progress(1.0f);
-      Bukkit.getOnlinePlayers().forEach(player -> player.showBossBar(bossBar));
       return;
     }
 
@@ -95,7 +109,6 @@ public class BossBarService {
     bossBar.name(MINI_MESSAGE.deserialize(title));
     bossBar.progress(progress);
     bossBar.color(getLeadingColor(redScore, blueScore));
-    Bukkit.getOnlinePlayers().forEach(player -> player.showBossBar(bossBar));
   }
 
   private BossBar.Color getLeadingColor(int redScore, int blueScore) {

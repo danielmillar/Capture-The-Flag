@@ -3,6 +3,7 @@ package dev.danielmillar.ctf;
 import dev.danielmillar.ctf.commands.CommandRegistrar;
 import dev.danielmillar.ctf.game.GameManager;
 import dev.danielmillar.ctf.listeners.FlagListener;
+import dev.danielmillar.ctf.listeners.PlayerListener;
 import dev.danielmillar.ctf.listeners.WorldListener;
 import dev.danielmillar.ctf.service.BossBarService;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
@@ -20,6 +21,7 @@ public final class CaptureTheFlag extends JavaPlugin {
     bossBarService.start();
 
     getServer().getPluginManager().registerEvents(new WorldListener(), this);
+    getServer().getPluginManager().registerEvents(new PlayerListener(bossBarService), this);
     getServer().getPluginManager().registerEvents(new FlagListener(gameManager), this);
 
     getLifecycleManager()

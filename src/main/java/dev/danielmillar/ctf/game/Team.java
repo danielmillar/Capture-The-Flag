@@ -1,9 +1,8 @@
 package dev.danielmillar.ctf.game;
 
-import org.bukkit.Material;
-
 import java.util.Arrays;
 import java.util.Optional;
+import org.bukkit.Material;
 
 public enum Team {
   RED("Red", "red", Material.RED_BANNER),

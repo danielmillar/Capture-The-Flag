@@ -5,9 +5,8 @@ import dev.danielmillar.ctf.game.GameManager;
 import dev.danielmillar.ctf.game.GameState;
 import dev.danielmillar.ctf.game.Team;
 import dev.danielmillar.ctf.model.TeamData;
-import io.papermc.paper.event.player.AsyncPlayerSpawnLocationEvent;
+import java.util.Optional;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -16,10 +15,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.EquipmentSlot;
-
-import java.util.Optional;
 
 public class FlagListener implements Listener {
 
@@ -30,19 +30,6 @@ public class FlagListener implements Listener {
 
   public FlagListener(GameManager gameManager) {
     this.gameManager = gameManager;
-  }
-
-  @EventHandler
-  public void onPlayerJoin(PlayerJoinEvent event) {
-    event.joinMessage(null);
-  }
-
-  @SuppressWarnings("UnstableApiUsage")
-  @EventHandler
-  public void onPlayerSpawn(AsyncPlayerSpawnLocationEvent event) {
-    org.bukkit.World world = Bukkit.getWorld("world");
-    if (world == null) return;
-    event.setSpawnLocation(world.getSpawnLocation());
   }
 
   @EventHandler
@@ -72,7 +59,6 @@ public class FlagListener implements Listener {
   @EventHandler
   public void onPlayerQuit(PlayerQuitEvent event) {
     if (gameManager.getState() != GameState.RUNNING) return;
-    event.quitMessage(null);
 
     dropFlagIfCarried(event.getPlayer(), event.getPlayer().getLocation());
     gameManager.removePlayerTeam(event.getPlayer().getUniqueId());

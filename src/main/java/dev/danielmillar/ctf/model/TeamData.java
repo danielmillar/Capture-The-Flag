@@ -1,9 +1,8 @@
 package dev.danielmillar.ctf.model;
 
 import dev.danielmillar.ctf.game.FlagState;
-import org.bukkit.Location;
-
 import java.util.*;
+import org.bukkit.Location;
 
 public class TeamData {
 

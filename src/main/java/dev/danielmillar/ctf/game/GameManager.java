@@ -2,16 +2,15 @@ package dev.danielmillar.ctf.game;
 
 import dev.danielmillar.ctf.model.TeamData;
 import dev.danielmillar.ctf.service.BossBarService;
+import java.time.Duration;
+import java.util.*;
+import java.util.function.Consumer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
-
-import java.time.Duration;
-import java.util.*;
-import java.util.function.Consumer;
 
 public class GameManager {
 
