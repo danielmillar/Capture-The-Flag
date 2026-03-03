@@ -5,10 +5,12 @@ import dev.danielmillar.ctf.service.BossBarService;
 import java.time.Duration;
 import java.util.*;
 import java.util.function.Consumer;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -16,6 +18,7 @@ public class GameManager {
 
   private static final int WIN_SCORE = 3;
   private static final Duration MATCH_DURATION = Duration.ofMinutes(10);
+  private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
 
   private final JavaPlugin plugin;
 
@@ -311,6 +314,46 @@ public class GameManager {
       resetFlagsForTeam(team, data, baseLocation);
       data.resetForRound();
       teleportTeamMembers(data, baseLocation);
+    }
+  }
+
+  /**
+   * Drops the flag at the given location if the player is carrying one and broadcasts the event.
+   *
+   * @param player The player who may be carrying a flag.
+   * @param location The location to drop the flag at.
+   */
+  public void dropFlagIfCarried(Player player, Location location) {
+    for (Team flagTeam : Team.values()) {
+      Optional<TeamData> dataOpt = getTeamData(flagTeam);
+      if (dataOpt.isEmpty()) continue;
+
+      TeamData flagData = dataOpt.get();
+
+      boolean isCarrier =
+          flagData
+              .getFlagCarrier()
+              .map(carrier -> carrier.equals(player.getUniqueId()))
+              .orElse(false);
+      if (!isCarrier) continue;
+
+      Location blockLocation = location.toBlockLocation();
+      flagData.clearFlagCarrier();
+      flagData.setFlagState(FlagState.DROPPED);
+      flagData.setCurrentFlagLocation(blockLocation);
+      blockLocation.getBlock().setType(flagTeam.getBannerMaterial());
+
+      player
+          .getServer()
+          .broadcast(
+              MINI_MESSAGE.deserialize(
+                  String.format(
+                      "<white>%s</white> <gray>dropped the <%s>%s</%s> <gray>flag.",
+                      player.getName(),
+                      flagTeam.getColor(),
+                      flagTeam.getDisplayName(),
+                      flagTeam.getColor())));
+      return;
     }
   }
 

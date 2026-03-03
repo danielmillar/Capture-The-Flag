@@ -38,7 +38,7 @@ public class FlagListener implements Listener {
     event.getDrops().clear();
     event.deathMessage(null);
 
-    dropFlagIfCarried(event.getPlayer(), event.getPlayer().getLocation());
+    gameManager.dropFlagIfCarried(event.getPlayer(), event.getPlayer().getLocation());
   }
 
   @EventHandler
@@ -60,7 +60,7 @@ public class FlagListener implements Listener {
   public void onPlayerQuit(PlayerQuitEvent event) {
     if (gameManager.getState() != GameState.RUNNING) return;
 
-    dropFlagIfCarried(event.getPlayer(), event.getPlayer().getLocation());
+    gameManager.dropFlagIfCarried(event.getPlayer(), event.getPlayer().getLocation());
     gameManager.removePlayerTeam(event.getPlayer().getUniqueId());
   }
 
@@ -212,45 +212,5 @@ public class FlagListener implements Listener {
     }
 
     gameManager.resetRound();
-  }
-
-  /**
-   * Drops the flag at the given location if the player is carrying one and broadcasts the event.
-   *
-   * @param player The player who may be carrying a flag.
-   * @param location The location to drop the flag at.
-   */
-  private void dropFlagIfCarried(Player player, Location location) {
-    for (Team flagTeam : TEAMS) {
-      Optional<TeamData> dataOpt = gameManager.getTeamData(flagTeam);
-      if (dataOpt.isEmpty()) continue;
-
-      TeamData flagData = dataOpt.get();
-
-      boolean isCarrier =
-          flagData
-              .getFlagCarrier()
-              .map(carrier -> carrier.equals(player.getUniqueId()))
-              .orElse(false);
-      if (!isCarrier) continue;
-
-      Location blockLocation = location.toBlockLocation();
-      flagData.clearFlagCarrier();
-      flagData.setFlagState(FlagState.DROPPED);
-      flagData.setCurrentFlagLocation(blockLocation);
-      blockLocation.getBlock().setType(flagTeam.getBannerMaterial());
-
-      player
-          .getServer()
-          .broadcast(
-              MINI_MESSAGE.deserialize(
-                  String.format(
-                      "<white>%s</white> <gray>dropped the <%s>%s</%s> <gray>flag.",
-                      player.getName(),
-                      flagTeam.getColor(),
-                      flagTeam.getDisplayName(),
-                      flagTeam.getColor())));
-      return;
-    }
   }
 }

@@ -4,7 +4,6 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
-import dev.danielmillar.ctf.game.FlagState;
 import dev.danielmillar.ctf.game.GameManager;
 import dev.danielmillar.ctf.game.GameState;
 import dev.danielmillar.ctf.game.Team;
@@ -12,14 +11,15 @@ import dev.danielmillar.ctf.model.TeamData;
 import dev.danielmillar.ctf.service.BossBarService;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public final class CommandRegistrar {
 
@@ -143,34 +143,7 @@ public final class CommandRegistrar {
               }
 
               Team team = currentTeam.get();
-              Team enemyTeam = team.getOpposite();
-
-              boolean wasCarryingFlag =
-                  gameManager
-                      .getTeamData(enemyTeam)
-                      .flatMap(TeamData::getFlagCarrier)
-                      .map(carrier -> carrier.equals(player.getUniqueId()))
-                      .orElse(false);
-
-              if (wasCarryingFlag) {
-                gameManager
-                    .getTeamData(enemyTeam)
-                    .ifPresent(
-                        enemyData -> {
-                          enemyData.clearFlagCarrier();
-                          enemyData.setFlagState(FlagState.AT_BASE);
-                          enemyData
-                              .getBaseFlagLocation()
-                              .ifPresent(
-                                  baseLoc -> {
-                                    enemyData.setCurrentFlagLocation(baseLoc);
-                                    if (baseLoc.getWorld() != null) {
-                                      baseLoc.getBlock().setType(enemyTeam.getBannerMaterial());
-                                    }
-                                  });
-                        });
-              }
-
+              gameManager.dropFlagIfCarried(player, player.getLocation());
               gameManager.removePlayerTeam(player.getUniqueId());
 
               player.sendMessage(
@@ -189,18 +162,6 @@ public final class CommandRegistrar {
                               team.getColor(),
                               team.getDisplayName(),
                               team.getColor())));
-
-              if (wasCarryingFlag) {
-                player
-                    .getServer()
-                    .broadcast(
-                        MINI_MESSAGE.deserialize(
-                            String.format(
-                                "<gray>The <%s>%s</%s> <gray>flag has been returned to base.",
-                                enemyTeam.getColor(),
-                                enemyTeam.getDisplayName(),
-                                enemyTeam.getColor())));
-              }
 
               return Command.SINGLE_SUCCESS;
             });
