@@ -5,6 +5,7 @@ import dev.danielmillar.ctf.game.GameManager;
 import dev.danielmillar.ctf.game.GameState;
 import dev.danielmillar.ctf.game.Team;
 import dev.danielmillar.ctf.model.TeamData;
+import java.util.Optional;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -19,8 +20,6 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.EquipmentSlot;
-
-import java.util.Optional;
 
 public class FlagListener implements Listener {
 
@@ -156,7 +155,7 @@ public class FlagListener implements Listener {
   @EventHandler
   public void onPlayerMove(PlayerMoveEvent event) {
     if (gameManager.getState() != GameState.RUNNING) return;
-	if (!event.hasChangedBlock()) return;
+    if (!event.hasChangedBlock()) return;
 
     Player player = event.getPlayer();
     Optional<Team> playerTeam = gameManager.getPlayerTeam(player.getUniqueId());
