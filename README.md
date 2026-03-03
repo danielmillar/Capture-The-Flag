@@ -2,7 +2,7 @@
 
 ## Tested On
 
-- **Paper** `1.21.11` (build `#38`)
+- **Paper** `1.21.11` (build `#126`)
 - **Java** `21`
 
 ---
